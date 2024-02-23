@@ -1,7 +1,10 @@
 #include "Display.h"
 #include <iostream>
 
+
+
 Display::Display()
+    
 {
     /* Initialize the library */
     if (!glfwInit()) {
@@ -27,7 +30,9 @@ Display::Display()
     glfwMakeContextCurrent(m_Window);
 
     glfwSwapInterval(1);    // Synchronize frame updates with V sync
+
 }
+
 
 Display::~Display()
 {

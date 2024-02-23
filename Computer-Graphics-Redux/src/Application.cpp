@@ -8,6 +8,9 @@
 #include "Model.h"
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "Input.h"
+
+
 
 int main() {
 
@@ -125,8 +128,8 @@ int main() {
 	int window_width = 960;
 	int window_height = 540;
 
-	Transform camera = Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-	Transform model = Transform(glm::vec3(2, 0, -7), glm::vec3(0, 3.14f / 4, 3.14f / 6), glm::vec3(5, 5, 5));
+	Transform camera = Transform(glm::vec3(0, 0, -7), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	Transform model = Transform(glm::vec3(3, 0, 0), glm::vec3(0, 3.14f / 4, 0), glm::vec3(5, 5, 5));
 	//glm::mat4 projection = glm::perspective(glm::radians(90.0f), window_width / (float)window_height, 1.0f, 100.0f);
 	float FoV = 90;
 	glm::mat4 projectionMatrix = glm::perspective(
@@ -144,20 +147,45 @@ int main() {
 	//glEnable(GL_CULL_FACE);
 	//glDepthFunc(GL_ALWAYS);
 
+	
+	// create input module
+	InputModule* inputMod = InputModule::InitializeInputModule(window.GetWindow());
+	float moveSpeed = 0.3f;
 
     /* Loop until the user closes the window */
     while (!window.WindowShouldClose())
     {
+		// Move camera
+		glm::vec3 change = glm::vec3(0);
+		if (inputMod->QueryInput(Input::DOWN))
+			change.z -= moveSpeed;
+		if (inputMod->QueryInput(Input::UP))
+			change.z += moveSpeed;
+		if (inputMod->QueryInput(Input::LEFT))
+			change.x += moveSpeed;
+		if (inputMod->QueryInput(Input::RIGHT))
+			change.x -= moveSpeed;
+		if (inputMod->QueryInput(Input::Q))
+			change.y += moveSpeed;
+		if (inputMod->QueryInput(Input::E))
+			change.y -= moveSpeed;
+		camera.Translate(change);
+
+		mvp = projectionMatrix* camera.GetMatrix()* model.GetMatrix();
+
+
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //renderer.RenderScene(scene);
 
+		//mvp = projectionMatrix * camera.GetMatrix() * Transform(m_Transform, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)).GetMatrix();
 		shader.Bind();
 		shader.SetUniformMat4f("u_MVP", mvp);
 
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 
+		
 
 
         window.EndFrame();
