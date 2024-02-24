@@ -10,6 +10,7 @@ public:
 	~Transform();
 
 	void Translate(glm::vec3 translation);
+	void Rotate(float amount);
 
 	glm::mat4 GetMatrix() const;
 };

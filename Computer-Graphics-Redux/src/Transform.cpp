@@ -21,6 +21,11 @@ void Transform::Translate(glm::vec3 translation)
 	m_Translation += translation;
 }
 
+void Transform::Rotate(float amount)
+{
+	m_Rotation.y += amount;
+}
+
 
 glm::mat4 Transform::GetMatrix() const
 {

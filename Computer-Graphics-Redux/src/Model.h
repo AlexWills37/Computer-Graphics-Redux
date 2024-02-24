@@ -5,6 +5,7 @@
 struct Vertex {
 	float position[3];
 	float color[3];
+	float normal[3];
 };
 
 class Model {
@@ -25,4 +26,5 @@ public:
 
 
 	static Model CreateCube();
+	static Model CreateSphere(uint32_t circlePointCount);
 };

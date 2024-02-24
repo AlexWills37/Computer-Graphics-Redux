@@ -2,6 +2,7 @@
 #include <vector>
 #include <GL/glew.h>
 #include <stdexcept>
+
 /*
  * VertexBufferLayout.h
  * Contains the necessary information to define a layout for the vertices.

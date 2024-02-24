@@ -84,16 +84,15 @@ int main() {
 	}; */
 
 
-
+	int indexCount = 0;
 	{
-		Model cube = Model::CreateCube();
+		Model cube = Model::CreateSphere(25);
 		std::vector<uint32_t> indices = cube.GetIndices();
+		indexCount = indices.size();
 		std::vector<Vertex> vertices = cube.GetVertices();
 
 
-		VertexBufferLayout layout;
-		layout.Push<float>(3);
-		layout.Push<float>(3);
+		VertexBufferLayout layout = cube.GetLayout();
 
 		// Create vao
 		glGenVertexArrays(1, &vao);
@@ -113,7 +112,7 @@ int main() {
 			// Now use the layout to make attribute pointers to store in the current VAO
 			glEnableVertexAttribArray(i);
 			glVertexAttribPointer(i, attribute.count, attribute.type, attribute.normalized,
-				layout.GetStride(), (const void*)offset);
+				sizeof(Vertex), (const void*)offset);
 
 			offset += attribute.count * VertexBufferAttribute::GetSizeOfType(attribute.type);
 		}
@@ -129,7 +128,7 @@ int main() {
 	int window_height = 540;
 
 	Transform camera = Transform(glm::vec3(0, 0, -7), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-	Transform model = Transform(glm::vec3(3, 0, 0), glm::vec3(0, 3.14f / 4, 0), glm::vec3(5, 5, 5));
+	Transform model = Transform(glm::vec3(3, 0, 0), glm::vec3(0, 0, 0), glm::vec3(5, 5, 5));
 	//glm::mat4 projection = glm::perspective(glm::radians(90.0f), window_width / (float)window_height, 1.0f, 100.0f);
 	float FoV = 90;
 	glm::mat4 projectionMatrix = glm::perspective(
@@ -142,15 +141,17 @@ int main() {
 	glm::mat4 mvp = projectionMatrix * camera.GetMatrix() * model.GetMatrix();
 		//model.GetMatrix() * glm::affineInverse(camera.GetMatrix()) * projection;
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	//glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	//glDepthFunc(GL_ALWAYS);
 
 	
 	// create input module
 	InputModule* inputMod = InputModule::InitializeInputModule(window.GetWindow());
 	float moveSpeed = 0.3f;
+	float rotSpeed = 1;
 
     /* Loop until the user closes the window */
     while (!window.WindowShouldClose())
@@ -170,6 +171,11 @@ int main() {
 		if (inputMod->QueryInput(Input::E))
 			change.y -= moveSpeed;
 		camera.Translate(change);
+		if (inputMod->QueryInput(Input::LEFTA))
+			camera.Rotate(-3.14f / 180 * rotSpeed);
+		if (inputMod->QueryInput(Input::RIGHTA))
+			camera.Rotate(3.14f / 180 * rotSpeed);
+
 
 		mvp = projectionMatrix* camera.GetMatrix()* model.GetMatrix();
 
@@ -183,7 +189,7 @@ int main() {
 		shader.Bind();
 		shader.SetUniformMat4f("u_MVP", mvp);
 
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
 
 		
 
