@@ -18,16 +18,16 @@ void InputModule::InstancedKeyCallback(GLFWwindow* window, int key, int scancode
 	if (action != GLFW_REPEAT) {
 		switch (key) {
 		case GLFW_KEY_S:
-			toChange = DOWN;
+			toChange = S;
 			break;
 		case GLFW_KEY_W:
-			toChange = UP;
+			toChange = W;
 			break;
 		case GLFW_KEY_A:
-			toChange = LEFT;
+			toChange = A;
 			break;
 		case GLFW_KEY_D:
-			toChange = RIGHT;
+			toChange = D;
 			break;
 		case GLFW_KEY_Q:
 			toChange = Q;
@@ -36,10 +36,16 @@ void InputModule::InstancedKeyCallback(GLFWwindow* window, int key, int scancode
 			toChange = E;
 			break;
 		case GLFW_KEY_LEFT:
-			toChange = LEFTA;
+			toChange = LEFT;
 			break;
 		case GLFW_KEY_RIGHT:
-			toChange = RIGHTA;
+			toChange = RIGHT;
+			break;
+		case GLFW_KEY_UP:
+			toChange = UP;
+			break;
+		case GLFW_KEY_DOWN:
+			toChange = DOWN;
 			break;
 		}
 

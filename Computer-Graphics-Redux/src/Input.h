@@ -5,7 +5,7 @@
 enum Input {
 	NONE, 
 	UP, DOWN, LEFT, RIGHT,
-	LEFTA, RIGHTA,
+	W, A, S, D,
 	Q, E,
 	LAST
 };

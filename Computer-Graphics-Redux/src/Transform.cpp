@@ -2,6 +2,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/euler_angles.hpp"
+
 Transform::Transform()
 	: m_Translation(glm::vec3(0.0f)), m_Rotation(glm::vec3(0.0f)), m_Scale(glm::vec3(1.0f))
 {
@@ -35,7 +36,6 @@ glm::mat4 Transform::GetMatrix() const
 	glm::mat4 translation = glm::translate(glm::mat4(1), m_Translation);
 	glm::mat4 rotation = glm::eulerAngleYXZ(m_Rotation[1], m_Rotation[0], m_Rotation[2]);
 
-	//rotation = glm::mat4(1);
 
 	glm::mat4 transformation = translation * rotation * scale;
 

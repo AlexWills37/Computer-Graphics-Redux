@@ -1,5 +1,6 @@
 #include "Model.h"
 #include <cmath>
+#include <iostream>
 
 Model::Model(std::vector<Vertex> vertices, std::vector<uint32_t> indices, VertexBufferLayout layout)
 	: m_Vertices(vertices), m_Indices(indices), m_Layout(layout), m_IndexCount(indices.size())
@@ -92,10 +93,16 @@ Model Model::CreateSphere(uint32_t circlePointCount)
 	float increment = 3.14f / circlePointCount;
 	int radius = 1;
 	float theta, phi;
+	
+	
+
+	
 	for (int t = 0; t < circlePointCount * 2; t++) {
 		theta = t * increment;
-		for (int p = 0; p < circlePointCount ; p++) {
+		for (int p = 0; p < circlePointCount; p++) {
 			phi = p * increment;
+			
+			
 			vertices.push_back(
 				{
 					radius * std::cos(theta) * std::sin(phi),	// x
@@ -111,6 +118,7 @@ Model Model::CreateSphere(uint32_t circlePointCount)
 				}
 			);
 
+
 			if (t != 0) {
 				if (p != 0) {
 					indices.push_back(p + (t - 1) * circlePointCount);	// Same point on previous ring
@@ -124,7 +132,9 @@ Model Model::CreateSphere(uint32_t circlePointCount)
 			}
 
 			
+			// Stitch the last ring with the first ring
 			if (t == 2 * circlePointCount - 1) {	// At last ring, connect it back to the first ring
+				
 				if (p != 0) {
 					indices.push_back((p - 1));						// Previous point on first ring
 					indices.push_back((p - 1) + t * circlePointCount);	// Previous point on same ring
@@ -139,6 +149,38 @@ Model Model::CreateSphere(uint32_t circlePointCount)
 			
 		}
 	}
+
+	
+	
+	// Create the back cap
+	std::cout << "\nPoint back cap "<< std::endl;
+	theta = 0;
+	phi = 3.14f;
+	uint32_t backVertex = 2 * circlePointCount * circlePointCount;
+	vertices.push_back(
+		{
+			radius * std::cos(theta) * std::sin(phi),	// x
+			radius * std::sin(theta) * std::sin(phi),	// y
+			radius * std::cos(phi),	// z
+			1.0f, 1.0f, 1.0f,	// Color
+
+			// Normal
+			std::cos(theta) * std::sin(phi),	// x
+			std::sin(theta) * std::sin(phi),	// y
+			std::cos(phi)	// z
+
+		}
+	);
+
+	// Connect this last point with every final edge part
+	for (int t = 0; t < circlePointCount * 2; t++) {
+		int p = circlePointCount - 1 + t * circlePointCount;
+		indices.push_back(p);
+		indices.push_back(backVertex);
+		indices.push_back((p + circlePointCount) % backVertex);
+	}
+	
+	
 
 	layout.Push<float>(3);
 	layout.Push<float>(3);

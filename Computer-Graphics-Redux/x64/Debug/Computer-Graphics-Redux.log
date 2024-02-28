@@ -1,4 +1,2 @@
-﻿  Application.cpp
-C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\Application.cpp(91,28): warning C4267: '=': 'size_t' - 'int' dönüşümü; veri kaybı olabilir
-C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\Application.cpp(115,21): warning C4312: 'tür dönüştürme': 'unsigned int' öğesinden daha büyük boyutlu 'const void *' öğesine dönüştürme
+﻿  Camera.cpp
   Computer-Graphics-Redux.vcxproj -> C:\dev\Computer-Graphics-Redux\x64\Debug\Computer-Graphics-Redux.exe

@@ -9,10 +9,39 @@
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Input.h"
+#include "Camera.h"
 
 
 
 int main() {
+
+
+	Camera c = Camera(960, 500, 90, 0.1f, 100.0f);
+	/*c.Translate(glm::vec3(-1, -2, 5));
+	std::cout << "0 pitch 0 yaw" << std::endl;
+	c.GetInverseCameraMatrix();
+
+	std::cout << "\n90 pitch 0 yaw" << std::endl;
+	c.Rotate(0, 3.14 / 2);
+	c.GetInverseCameraMatrix();
+
+	std::cout << "\n180 pitch 0 yaw" << std::endl;
+	c.Rotate(0, 3.14 / 2);
+	c.GetInverseCameraMatrix();
+
+
+	std::cout << "\n90 pitch 90 yaw" << std::endl;
+	c.Rotate(3.14/2, -3.14 / 2);
+	c.GetInverseCameraMatrix();
+
+	std::cout << "\n90 pitch 180 yaw" << std::endl;
+	c.Rotate(3.14 / 2, 0);
+	c.GetInverseCameraMatrix();
+	*/
+
+	c.Rotate(0, 3.14 / 2);
+	
+
 
     Display window;
 
@@ -87,6 +116,7 @@ int main() {
 	int indexCount = 0;
 	{
 		Model cube = Model::CreateSphere(25);
+		//Model cube = Model::CreateCube();
 		std::vector<uint32_t> indices = cube.GetIndices();
 		indexCount = indices.size();
 		std::vector<Vertex> vertices = cube.GetVertices();
@@ -127,8 +157,7 @@ int main() {
 	int window_width = 960;
 	int window_height = 540;
 
-	Transform camera = Transform(glm::vec3(0, 0, -7), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-	Transform model = Transform(glm::vec3(3, 0, 0), glm::vec3(0, 0, 0), glm::vec3(5, 5, 5));
+	Transform model = Transform(glm::vec3(3, 0, -7	), glm::vec3(0, 0, 0), glm::vec3(5, 5, 5));
 	//glm::mat4 projection = glm::perspective(glm::radians(90.0f), window_width / (float)window_height, 1.0f, 100.0f);
 	float FoV = 90;
 	glm::mat4 projectionMatrix = glm::perspective(
@@ -138,12 +167,11 @@ int main() {
 		100.0f             // Far clipping plane. Keep as little as possible.
 	);
 	
-	glm::mat4 mvp = projectionMatrix * camera.GetMatrix() * model.GetMatrix();
-		//model.GetMatrix() * glm::affineInverse(camera.GetMatrix()) * projection;
+	glm::mat4 mvp;
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	//glDepthFunc(GL_ALWAYS);
 
@@ -153,31 +181,44 @@ int main() {
 	float moveSpeed = 0.3f;
 	float rotSpeed = 1;
 
+	Camera cam = Camera(960, 540, 90, 0.1f, 100.0f);
+	cam.Rotate(0, 3.14 / 2);
+
     /* Loop until the user closes the window */
     while (!window.WindowShouldClose())
     {
 		// Move camera
 		glm::vec3 change = glm::vec3(0);
-		if (inputMod->QueryInput(Input::DOWN))
-			change.z -= moveSpeed;
-		if (inputMod->QueryInput(Input::UP))
+		glm::vec2 rotation = glm::vec2(0);
+
+		if (inputMod->QueryInput(Input::S))
 			change.z += moveSpeed;
-		if (inputMod->QueryInput(Input::LEFT))
-			change.x += moveSpeed;
-		if (inputMod->QueryInput(Input::RIGHT))
+		if (inputMod->QueryInput(Input::W))
+			change.z -= moveSpeed;
+		if (inputMod->QueryInput(Input::A))
 			change.x -= moveSpeed;
+		if (inputMod->QueryInput(Input::D))
+			change.x += moveSpeed;
 		if (inputMod->QueryInput(Input::Q))
-			change.y += moveSpeed;
-		if (inputMod->QueryInput(Input::E))
 			change.y -= moveSpeed;
-		camera.Translate(change);
-		if (inputMod->QueryInput(Input::LEFTA))
-			camera.Rotate(-3.14f / 180 * rotSpeed);
-		if (inputMod->QueryInput(Input::RIGHTA))
-			camera.Rotate(3.14f / 180 * rotSpeed);
+		if (inputMod->QueryInput(Input::E))
+			change.y += moveSpeed;
+		if (inputMod->QueryInput(Input::LEFT))
+			rotation.x -= rotSpeed;
+		if (inputMod->QueryInput(Input::RIGHT))
+			rotation.x += rotSpeed;
+		if (inputMod->QueryInput(Input::UP))
+			rotation.y -= rotSpeed;
+		if (inputMod->QueryInput(Input::DOWN))
+			rotation.y += rotSpeed;
+
+		rotation *= 3.14f / 180;
+		cam.Rotate(rotation.x, rotation.y);
+		cam.Move(change);
 
 
-		mvp = projectionMatrix* camera.GetMatrix()* model.GetMatrix();
+
+		mvp = cam.GetWorldToScreenMatrix() * model.GetMatrix();
 
 
         /* Render here */
