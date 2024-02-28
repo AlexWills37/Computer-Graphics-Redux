@@ -1,2 +1,8 @@
-﻿  Camera.cpp
+﻿  Application.cpp
+C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\Application.cpp(42,19): warning C4305: 'bağımsız değişken': 'double' iken 'float' olarak kesildi
+C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\Application.cpp(121,28): warning C4267: '=': 'size_t' - 'int' dönüşümü; veri kaybı olabilir
+C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\Application.cpp(145,21): warning C4312: 'tür dönüştürme': 'unsigned int' öğesinden daha büyük boyutlu 'const void *' öğesine dönüştürme
+glew32s.lib(glew.obj) : warning LNK4099: PDB '', 'glew32s.lib(glew.obj)' ile veya '' üzerinde bulunamadi; nesne, hata ayiklama bilgileri yokmus gibi baglaniyor
+LINK : warning LNK4098: defaultlib 'LIBCMT' diger kitapliklarin kullanimi ile çakisiyor; /NODEFAULTLIB:library kullanin
+LINK : warning LNK4098: defaultlib 'MSVCRT' diger kitapliklarin kullanimi ile çakisiyor; /NODEFAULTLIB:library kullanin
   Computer-Graphics-Redux.vcxproj -> C:\dev\Computer-Graphics-Redux\x64\Debug\Computer-Graphics-Redux.exe

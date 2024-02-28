@@ -159,18 +159,12 @@ int main() {
 
 	Transform model = Transform(glm::vec3(3, 0, -7	), glm::vec3(0, 0, 0), glm::vec3(5, 5, 5));
 	//glm::mat4 projection = glm::perspective(glm::radians(90.0f), window_width / (float)window_height, 1.0f, 100.0f);
-	float FoV = 90;
-	glm::mat4 projectionMatrix = glm::perspective(
-		glm::radians(FoV), // The vertical Field of View, in radians: the amount of "zoom". Think "camera lens". Usually between 90° (extra wide) and 30° (quite zoomed in)
-		960.0f / 540.0f,       // Aspect Ratio. Depends on the size of your window. Notice that 4/3 == 800/600 == 1280/960, sounds familiar?
-		0.1f,              // Near clipping plane. Keep as big as possible, or you'll get precision issues.
-		100.0f             // Far clipping plane. Keep as little as possible.
-	);
+	
 	
 	glm::mat4 mvp;
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	//glDepthFunc(GL_ALWAYS);
@@ -182,7 +176,6 @@ int main() {
 	float rotSpeed = 1;
 
 	Camera cam = Camera(960, 540, 90, 0.1f, 100.0f);
-	cam.Rotate(0, 3.14 / 2);
 
     /* Loop until the user closes the window */
     while (!window.WindowShouldClose())

@@ -1,14 +1,11 @@
 #include "Camera.h"
 #include "glm/gtc/matrix_transform.hpp"
-#define GLM_ENABLE_EXPERIMENTAL
-#include "glm/gtx/euler_angles.hpp"
-
-#include <iostream>
 
 Camera::Camera(float screenWidth, float screenHeight, float fov, float nearPlaneDist, float farPlaneDist)
 	: m_ScreenWidth(screenWidth), m_ScreenHeight(screenHeight), m_FOV(fov), m_NearPlaneDist(nearPlaneDist),
-	m_FarPlaneDist(farPlaneDist), m_Transform(), m_Position(0)
+	m_FarPlaneDist(farPlaneDist), m_Position(0)
 {
+	// Create projection matrix with perspective projection
 	m_Projection = glm::perspective(
 		glm::radians(fov), 
 		screenWidth / screenHeight,       
@@ -19,6 +16,7 @@ Camera::Camera(float screenWidth, float screenHeight, float fov, float nearPlane
 
 Camera::~Camera()
 {
+	// All members may simply call their destructors
 }
 
 glm::mat4 Camera::GetWorldToScreenMatrix()
@@ -29,8 +27,11 @@ glm::mat4 Camera::GetWorldToScreenMatrix()
 
 void Camera::Rotate(float yawChange, float pitchChange)
 {
-	m_Yaw = m_Yaw + yawChange;	
+	// Allow yaw to wrap around from 2pi to 0
+	m_Yaw += yawChange;	
 	m_Yaw = m_Yaw < 0 ? m_Yaw + 2 * 3.14f : (m_Yaw > 2 * 3.14f ? m_Yaw - 2 * 3.14f : m_Yaw);
+
+	// Clamp pitch between 0 and pi
 	m_Pitch += pitchChange;
 	m_Pitch = m_Pitch > 3.14f ? 3.14f : (m_Pitch < 0 ? 0 : m_Pitch);
 }
@@ -55,11 +56,15 @@ void Camera::Move(glm::vec3 deltaPosition) {
 
 
 glm::mat4 Camera::GetInverseCameraMatrix() {
+	// Note: this code is far from optimized (intermediate steps and reassinging pitch/yaw to phi/theta not needed),
+	//    but it is kept this way for understanding and future reference (this project is intended for demonstrating
+	//    concepts, not actual use as a graphics/game engine).
 
 	float phi = m_Pitch;
 	float theta = m_Yaw;
 
-	// Trust in the process :) this math works
+	// Trust in the process :) this math works!
+	// Solution inspired by https://gamedev.stackexchange.com/questions/168542/camera-view-matrix-from-position-yaw-pitch-worldup
 	// Phi = pitch = rotation about local x axis. In range [0, pi], with 0 indicating the +y axis and pi indicating the -x axis
 	// Theta = yaw = rotation about the global y axis. In range [0, 2pi] with 0 and 2pi representing no rotation
 	/*
@@ -74,11 +79,6 @@ glm::mat4 Camera::GetInverseCameraMatrix() {
 	glm::vec3 xRotation = glm::vec3(std::cos(theta), 0, std::sin(theta));
 	glm::vec3 yRotation = glm::cross(zRotation, xRotation);
 
-	//std::cout << "Z Vector: " << zRotation.x << ", " << zRotation.y << ", " << zRotation.z << std::endl;
-	//std::cout << "X Vector: " << xRotation.x << ", " << xRotation.y << ", " << xRotation.z << std::endl;
-	//std::cout << "Y Vector: " << yRotation.x << ", " << yRotation.y << ", " << yRotation.z << std::endl;
-
-	glm::mat4 matrix = glm::mat4(glm::vec4(0), glm::vec4(0), glm::vec4(0), glm::vec4(3));
 	glm::mat4 rotationMatrix = glm::mat4(
 		xRotation.x, xRotation.y, xRotation.z, 0,
 		yRotation.x, yRotation.y, yRotation.z, 0,
@@ -95,17 +95,5 @@ glm::mat4 Camera::GetInverseCameraMatrix() {
 
 	glm::mat4 inverseTransform = glm::inverse(translationMatrix * rotationMatrix);
 
-	//glm::vec3 point = inverseTransform * glm::vec4(-1, -2, 5, 1);
-	//std::cout << "point: " << point.x << ", " << point.y << ", " << point.z << std::endl;
-
 	return inverseTransform;
-}
-
-
-glm::vec3 Camera::GetForwardVector(){
-	glm::vec3 forward;
-	forward.x = std::sin(m_Yaw);
-	forward.y = 0;
-	forward.z = -std::cos(m_Yaw);
-	return forward;
 }
