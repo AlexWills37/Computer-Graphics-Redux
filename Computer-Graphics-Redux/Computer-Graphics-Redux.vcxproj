@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\demos\SandboxDemo.cpp" />
     <ClCompile Include="src\Display.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\Model.cpp" />
@@ -143,6 +144,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\demos\Demo.h" />
+    <ClInclude Include="src\demos\SandboxDemo.h" />
     <ClInclude Include="src\Display.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\Model.h" />

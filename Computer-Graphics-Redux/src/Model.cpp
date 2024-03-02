@@ -1,6 +1,5 @@
 #include "Model.h"
 #include <cmath>
-#include <iostream>
 
 Model::Model(std::vector<Vertex> vertices, std::vector<uint32_t> indices, VertexBufferLayout layout)
 	: m_Vertices(vertices), m_Indices(indices), m_Layout(layout), m_IndexCount(indices.size())
@@ -153,7 +152,6 @@ Model Model::CreateSphere(uint32_t circlePointCount)
 	
 	
 	// Create the back cap
-	std::cout << "\nPoint back cap "<< std::endl;
 	theta = 0;
 	phi = 3.14f;
 	uint32_t backVertex = 2 * circlePointCount * circlePointCount;

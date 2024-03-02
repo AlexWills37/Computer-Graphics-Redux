@@ -27,6 +27,7 @@ void main()
 	vec4 pcolor = vec4((v_Normal * 0.5) + 0.5, 1.0f);
 	//color = vec4(angle, angle, angle, 1.0f);
 	color = pcolor * pixelLightIntensity;
+	//color = pixelLightIntensity * vec4(1.0f, 0.0f, 1.0f, 1.0f);
 	//color = pcolor * 0.9f;
 	//color = vec4(vec3(gl_FragCoord.z), 1.0);
 	//color = v_Color;

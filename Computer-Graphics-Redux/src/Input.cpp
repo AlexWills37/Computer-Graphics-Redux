@@ -55,11 +55,49 @@ void InputModule::InstancedKeyCallback(GLFWwindow* window, int key, int scancode
 	}
 }
 
+void InputModule::InstancedCursorPosCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	m_CursorVelocity[0] = xpos - m_PreviousPos[0];
+	m_CursorVelocity[1] = ypos - m_PreviousPos[1];
+	std::cout << m_CursorVelocity[0] << ", " << m_CursorVelocity[1] << std::endl;
+	m_PreviousPos[0] = xpos;
+	m_PreviousPos[1] = ypos;
+}
+
+void InputModule::InstancedMouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	if (button == GLFW_MOUSE_BUTTON_1) {
+			m_IsClicking = (action == GLFW_PRESS);
+	}
+}
+
 void InputModule::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	// Add the callback to the singleton instance
 	if (singleton != nullptr) {
 		GetInstance(window)->InstancedKeyCallback(window, key, scancode, action, mods);
+	}
+	else {
+		std::cout << "Error! Input Module not initialized!" << std::endl;
+	}
+}
+
+void InputModule::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	// Add the callback to the singleton instance
+	if (singleton != nullptr) {
+		GetInstance(window)->InstancedCursorPosCallback(window, xpos, ypos);
+	}
+	else {
+		std::cout << "Error! Input Module not initialized!" << std::endl;
+	}
+}
+
+void InputModule::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	// Add the callback to the singleton instance
+	if (singleton != nullptr) {
+		GetInstance(window)->InstancedMouseButtonCallback(window, button, action, mods);
 	}
 	else {
 		std::cout << "Error! Input Module not initialized!" << std::endl;
@@ -90,6 +128,8 @@ InputModule* InputModule::InitializeInputModule(GLFWwindow* window)
 
 	// Connect it to the GLFW system
 	glfwSetKeyCallback(window, KeyCallback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	//glfwSetCursorPosCallback(window, cursor_position_callback);
 
 	return mod;
 }

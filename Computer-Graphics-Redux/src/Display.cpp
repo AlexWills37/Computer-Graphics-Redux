@@ -1,7 +1,7 @@
 #include "Display.h"
 #include <iostream>
 
-
+Display* Display::s_DisplayPtr = nullptr;
 
 Display::Display()
     
@@ -51,4 +51,12 @@ void Display::EndFrame()
 
     /* Poll for and process events */
     glfwPollEvents();
+}
+
+Display* Display::GetDisplayPointer()
+{
+    if (s_DisplayPtr == nullptr) 
+        std::cout << "ERROR! Display pointer not set with Display::SetDisplayPointer.";
+    
+    return s_DisplayPtr;
 }

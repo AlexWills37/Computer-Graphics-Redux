@@ -19,8 +19,8 @@ class Camera {
 private:
 	float m_ScreenWidth, m_ScreenHeight, m_FOV, m_NearPlaneDist, m_FarPlaneDist;
 	glm::mat4 m_Projection;
+	glm::vec3 m_Position = glm::vec3(0);
 	float m_Yaw = 0, m_Pitch = 3.14f/2;
-	glm::vec3 m_Position;
 
 public:
 	// FOV is in degrees

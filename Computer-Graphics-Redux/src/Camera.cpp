@@ -3,7 +3,7 @@
 
 Camera::Camera(float screenWidth, float screenHeight, float fov, float nearPlaneDist, float farPlaneDist)
 	: m_ScreenWidth(screenWidth), m_ScreenHeight(screenHeight), m_FOV(fov), m_NearPlaneDist(nearPlaneDist),
-	m_FarPlaneDist(farPlaneDist), m_Position(0)
+	m_FarPlaneDist(farPlaneDist)
 {
 	// Create projection matrix with perspective projection
 	m_Projection = glm::perspective(
