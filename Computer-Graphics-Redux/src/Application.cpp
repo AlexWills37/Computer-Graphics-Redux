@@ -12,6 +12,8 @@
 #include "Camera.h"
 
 #include "demos/SandboxDemo.h"
+#include "demos/NormalSphereDemo.h"
+#include "demos/GouraudDemo.h"
 
 
 int main() {
@@ -31,11 +33,10 @@ int main() {
 
 	std::cout << "Using OpenGL: " << glGetString(GL_VERSION) << std::endl;
 
-	demo::Demo* d = new demo::SandboxDemo();
+	demo::Demo* d = new demo::GouraudDemo();
 
 	while (!window.WindowShouldClose())
 	{
-		
 		d->OnUpdate(0.0f);
 		d->OnRender();
 		window.EndFrame();

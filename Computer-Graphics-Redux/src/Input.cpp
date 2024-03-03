@@ -47,6 +47,14 @@ void InputModule::InstancedKeyCallback(GLFWwindow* window, int key, int scancode
 		case GLFW_KEY_DOWN:
 			toChange = DOWN;
 			break;
+		case GLFW_KEY_LEFT_SHIFT:
+		case GLFW_KEY_RIGHT_SHIFT:
+			toChange = SHIFT;
+			break;
+		case GLFW_KEY_LEFT_CONTROL:
+		case GLFW_KEY_RIGHT_CONTROL:
+			toChange = CONTROL;
+			break;
 		}
 
 		if (toChange != NONE) {

@@ -1,0 +1,308 @@
+#include "GouraudDemo.h"
+
+#include "GouraudDemo.h"
+
+#include "Display.h"
+#include "Model.h"
+#include "Transform.h"
+
+
+#include <iostream>
+
+/*
+ * Gouraud shading architecture:
+ * Static object:
+ *		Position
+ *		Normal
+ *		Color
+ *		Base lighting (no specular)
+ *
+ * Specular Lighting Requirements:
+ *		All non-ambient light sources
+ *			as Intensity and Light Vector (light - vertex)
+ *
+ *
+ * Every frame:
+ *		Add each vertex's specular lighting in vertex shader
+ *		Set color in fragment shader
+ *
+ *
+ * What the vertex shader receives:
+ *		Base vertex
+ *			Position, normal, base lighting
+ *		Lighting information[] ???
+ *			struct Light {
+ *				float intensity;
+ *				vec3 transform;
+ *				float type;
+ *			};
+ *		Camera position
+ *		Transform matrix
+ *
+ * Scene is list of models AKA -
+ *		VAO with vertex info
+ *		Draw call
+ *		Shader uniforms
+ *			here specular value (s)
+ *			mvp matrix
+ *			camera position
+ *			lights[]
+ *			color
+ *			
+ */
+
+
+
+struct LitVertex {
+	Vertex v;
+	float lightValue;
+};
+
+using namespace demo;
+
+float ComputeLighting(Vertex p, std::vector<Light> lights, glm::vec3 camPos)
+{
+	float specValue = 1000;
+
+	float totalLighting = 0;
+	for (int i = 0; i < lights.size(); i++) {
+		if (lights[i].type == AMBIENT) {
+			totalLighting += lights[i].intensity;
+		}
+		else {
+			glm::vec3 lightVector;
+			glm::vec3 normal = glm::vec3(p.normal[0], p.normal[1], p.normal[2]);
+			glm::vec3 pointPos = glm::vec3(p.position[0], p.position[1], p.position[2]);
+			if (lights[i].type == POINT) {
+				lightVector = lights[i].transform - pointPos;
+			}
+			else if (lights[i].type == DIRECTIONAL) {
+				lightVector = lights[i].transform;
+			}
+			else {
+				std::cout << "This code should not run. Light Type unknown." << std::endl;
+			}
+			// Now we have the light vector
+			float lightDotNorm = glm::dot(lightVector, normal);
+
+			if (lightDotNorm > 0) {
+				totalLighting += lights[i].intensity * lightDotNorm / (glm::length(lightVector) * glm::length(normal));
+			}
+
+			// Specular reflection
+			if (specValue >= 0) {
+				glm::vec3 reflectVector = 2.0f * normal * lightDotNorm - lightVector;
+				glm::vec3 viewVector = pointPos - camPos;
+				float reflectDotView = glm::dot(viewVector, reflectVector);
+				if (reflectDotView > 0) {
+					totalLighting += lights[i].intensity * glm::pow(reflectDotView / (glm::length(reflectVector) * glm::length(viewVector)), specValue);
+				}
+			}
+
+
+		}
+	}
+	//std::cout << totalLighting << std::endl;
+	return totalLighting;
+}
+
+float ComputePartialLighting(Vertex p, std::vector<Light> lights)
+{
+
+	float totalLighting = 0;
+	for (int i = 0; i < lights.size(); i++) {
+		if (lights[i].type == AMBIENT) {
+			totalLighting += lights[i].intensity;
+		}
+		else {
+			glm::vec3 lightVector;
+			glm::vec3 normal = glm::vec3(p.normal[0], p.normal[1], p.normal[2]);
+			glm::vec3 pointPos = glm::vec3(p.position[0], p.position[1], p.position[2]);
+			if (lights[i].type == POINT) {
+				lightVector = lights[i].transform - pointPos;
+			}
+			else if (lights[i].type == DIRECTIONAL) {
+				lightVector = lights[i].transform;
+			}
+			else {
+				std::cout << "This code should not run. Light Type unknown." << std::endl;
+			}
+			// Now we have the light vector
+			float lightDotNorm = glm::dot(lightVector, normal);
+
+			if (lightDotNorm > 0) {
+				totalLighting += lights[i].intensity * lightDotNorm / (glm::length(lightVector) * glm::length(normal));
+			}
+		}
+	}
+	return totalLighting;
+}
+
+float ComputeAmbientLighting(std::vector<Light> lights) {
+	float l = 0;
+	for (int i = 0; i < lights.size(); i++) {
+		if (lights[i].type == AMBIENT)
+			l += lights[i].intensity;
+	}
+	return l;
+}
+
+demo::GouraudDemo::GouraudDemo()
+{
+	// Get input module 
+	Display* display = Display::GetDisplayPointer();
+	m_InputMod = InputModule::GetInstance(display->GetWindow());
+
+	// Create camera
+	m_Camera = std::make_unique<Camera>(960, 500, 45, 0.1f, 100.0f);
+	//m_Camera->Translate(glm::vec3(0, 3.0f, 0.0f));
+
+
+
+	/* Build Scene */
+	Transform a = Transform(glm::vec3(-5, 3, -1), glm::vec3(0), glm::vec3(1));
+	Transform b = Transform(glm::vec3(0, -1, 0), glm::vec3(0), glm::vec3(1));
+	Transform c = Transform(glm::vec3(5, 3, -4), glm::vec3(0), glm::vec3(3));
+	m_Scene.push_back({ a, 10, glm::vec3(0.2, 0.8, 0.9) });
+	m_Scene.push_back({ b, 500, glm::vec3(0.9, 0.3, 0.1) });
+	m_Scene.push_back({ c, 1000, glm::vec3(0.9, 0.8, 0.2) });
+
+	// Create Sphere data
+	Model sphere = Model::CreateSphere(200);
+	//Model sphere = Model::CreateCube();
+	std::vector<uint32_t> indices = sphere.GetIndices();
+	m_IndexCount = indices.size();
+	std::vector<Vertex> vertices = sphere.GetVertices();
+
+	VertexBufferLayout layout = sphere.GetLayout();
+
+	// Add partial lighting information
+	m_Lights = {
+		{AMBIENT, 0.2f},
+		{DIRECTIONAL, 0.3f, glm::vec3(1, 3, 4)},
+		{POINT, 0.6f, glm::vec3(2, 1, 2)}
+	};
+
+	glm::vec3 camPos = m_Camera->GetPosition();
+
+	std::vector<LitVertex> litVertices;
+	float lightValue = ComputeAmbientLighting(m_Lights);
+	for (int i = 0; i < vertices.size(); i++) {
+		litVertices.push_back({ vertices[i], lightValue });
+	}
+	layout.Push<float>(1);
+
+
+	// Create vao
+	glGenVertexArrays(1, &m_VAO);
+	glBindVertexArray(m_VAO);
+
+	// Create vb
+	glGenBuffers(1, &m_VertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(LitVertex), litVertices.data(), GL_STATIC_DRAW);
+
+
+	const auto& attributes = layout.GetAttributes();
+	unsigned int offset = 0;
+	for (unsigned int i = 0; i < attributes.size(); i++) {
+		const auto& attribute = attributes[i];
+
+		// Now use the layout to make attribute pointers to store in the current VAO
+		glEnableVertexAttribArray(i);
+		glVertexAttribPointer(i, attribute.count, attribute.type, attribute.normalized,
+			sizeof(LitVertex), (const void*)offset);
+
+		offset += attribute.count * VertexBufferAttribute::GetSizeOfType(attribute.type);
+	}
+
+	// Create index buffer
+	glGenBuffers(1, &m_IndexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
+
+	// Create Shader
+	m_Shader = std::make_unique<Shader>("res/shaders/Gouraud");
+
+	// Configue OpenGL things
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+
+	// Move camera a little bit
+	m_Camera->Translate(glm::vec3(0, 0, 3.0f));
+
+
+	GLuint shader = m_Shader->GetShaderID();
+	GLuint blockID = glGetUniformBlockIndex(shader, "LightBlock");
+	GLint blockSize;
+	glGetActiveUniformBlockiv(shader, blockID, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+	;
+}
+
+demo::GouraudDemo::~GouraudDemo()
+{
+	glDeleteBuffers(1, &m_IndexBuffer);
+	glDeleteBuffers(1, &m_VertexBuffer);
+	glDeleteVertexArrays(1, &m_VAO);
+}
+
+void demo::GouraudDemo::OnUpdate(float deltaTime)
+{
+	glm::vec3 change = glm::vec3(0);
+	glm::vec2 rotation = glm::vec2(0);
+
+	if (m_InputMod->QueryInput(Input::S))
+		change.z += 1;
+	if (m_InputMod->QueryInput(Input::W))
+		change.z -= 1;
+	if (m_InputMod->QueryInput(Input::A))
+		change.x -= 1;
+	if (m_InputMod->QueryInput(Input::D))
+		change.x += 1;
+	if (m_InputMod->QueryInput(Input::Q))
+		change.y -= 1;
+	if (m_InputMod->QueryInput(Input::E))
+		change.y += 1;
+	if (m_InputMod->QueryInput(Input::LEFT))
+		rotation.x -= 1;
+	if (m_InputMod->QueryInput(Input::RIGHT))
+		rotation.x += 1;
+	if (m_InputMod->QueryInput(Input::UP))
+		rotation.y -= 1;
+	if (m_InputMod->QueryInput(Input::DOWN))
+		rotation.y += 1;
+
+	rotation *= 3.14f / 180;
+	m_Camera->Rotate(rotation.x, rotation.y);
+	if (change != glm::vec3(0))
+		change = glm::normalize(change);
+	if (m_InputMod->QueryInput(Input::SHIFT))
+		change *= 2.0f;
+	if (m_InputMod->QueryInput(Input::CONTROL))
+		change *= 0.5f;
+	m_Camera->Move(change * 0.05f);
+
+}
+
+void demo::GouraudDemo::OnRender()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Get camera position and view-projection matrix
+	glm::mat4 viewProj = m_Camera->GetWorldToScreenMatrix();
+	glm::vec3 camPos = m_Camera->GetPosition();
+
+	// Camera pos and light info will stay constant
+	m_Shader->Bind();
+	m_Shader->SetUniform4f("u_CamPos", camPos.x, camPos.y, camPos.z, 1.0f);
+
+	// Render each object
+	for (int i = 0; i < m_Scene.size(); i++) {
+		m_Shader->SetUniformMat4f("u_ViewProj", viewProj);
+		m_Shader->SetUniformMat4f("u_Transform", m_Scene[i].transform.GetMatrix());
+		glm::vec3 color = m_Scene[i].color;
+		m_Shader->SetUniform4f("u_Color", color.r, color.g, color.b, 1.0f);
+		m_Shader->SetUniform1f("u_SpecValue", m_Scene[i].specValue);
+		glDrawElements(GL_TRIANGLES, m_IndexCount, GL_UNSIGNED_INT, nullptr);
+	}
+}

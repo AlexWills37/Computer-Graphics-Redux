@@ -55,4 +55,6 @@ public:
 	 */
 	void Move(glm::vec3 deltaPosition);
 	glm::mat4 GetInverseCameraMatrix();
+
+	inline glm::vec3 GetPosition() { return m_Position; }
 };

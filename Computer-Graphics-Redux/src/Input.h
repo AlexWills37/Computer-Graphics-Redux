@@ -8,6 +8,7 @@ enum Input {
 	UP, DOWN, LEFT, RIGHT,
 	W, A, S, D,
 	Q, E,
+	SHIFT, CONTROL,
 	LAST
 };
 
