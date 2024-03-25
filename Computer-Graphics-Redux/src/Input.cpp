@@ -55,6 +55,18 @@ void InputModule::InstancedKeyCallback(GLFWwindow* window, int key, int scancode
 		case GLFW_KEY_RIGHT_CONTROL:
 			toChange = CONTROL;
 			break;
+		case GLFW_KEY_I:
+			toChange = I;
+			break;
+		case GLFW_KEY_J:
+			toChange = J;
+			break;
+		case GLFW_KEY_K:
+			toChange = K;
+			break;
+		case GLFW_KEY_L:
+			toChange = L;
+			break;
 		}
 
 		if (toChange != NONE) {

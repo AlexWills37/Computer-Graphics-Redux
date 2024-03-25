@@ -12,10 +12,16 @@ out float v_Light;
 
 
 struct Light 
+{						// Memory (bytes)
+	vec3 transform;		// 0-3
+	float isDirectional;	// 4
+	float intensity;	// 5
+			// 6-7
+};
+
+layout (std140) uniform Lights
 {
-	vec3 transform;
-	bool isDirectional;
-	float intensity;
+	Light lights[5];
 };
 
 /*
@@ -41,10 +47,10 @@ uniform float u_SpecValue;
 void main()
 {
 	// TODO: Send light information from CPU with Uniform Buffer
-	Light lights[2] = {
+	/*Light lights[2] = {
 		{ vec3(-1, 3, 1), true, 0.3f},
 		{ vec3(0, 1, -2), false, 0.6f}
-	};
+	};*/
 
 	vec4 worldPosition = u_Transform * position;
 	gl_Position = u_ViewProj * worldPosition;
@@ -55,7 +61,7 @@ void main()
 		
 		// Light direction vector
 		vec3 lightVector;
-		if (lights[i].isDirectional) {
+		if (lights[i].isDirectional > 0.5f) {
 			lightVector = lights[i].transform;
 		} else {
 			lightVector = lights[i].transform - worldPosition.xyz;
@@ -80,4 +86,5 @@ void main()
 	
 	// Interpolate light intensity
 	v_Light = totalLightIntensity;
+	//v_Light = lights[1].isDirectional > 0.5f?1:0;
 }

@@ -39,10 +39,11 @@ namespace demo {
 		uint32_t m_IndexCount;
 		std::vector<SphereInstance> m_Scene;
 
-		GLuint m_VAO, m_VertexBuffer, m_IndexBuffer, m_UniformBuffer;
+		GLuint m_VAO, m_VertexBuffer, m_IndexBuffer, m_UniformBuffer, m_UniformLights;
 
 		std::unique_ptr<Shader> m_Shader;
 
 		std::vector<Light> m_Lights;
+		glm::vec3 m_PointLightPos;
 	};
 }

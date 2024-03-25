@@ -10,6 +10,13 @@
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
 
+struct UniformLight {
+	glm::vec3 transform;		// 0-3
+	float isDirectional;	// 4
+	float intensity;	// 5
+	glm::vec3 padding06;
+};
+
 /*
  * Gouraud shading architecture:
  * Static object:
@@ -244,6 +251,22 @@ demo::GouraudDemo::GouraudDemo()
 	glUniformBlockBinding(m_Shader->GetShaderID(), matrixIndex, 0);	// Bind the "Matrices" (in the shader) to point 0 (in the Uniform Buffer).
 
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_UniformBuffer); // Connect index 0 to the buffer we made
+
+	glGenBuffers(1, &m_UniformLights);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_UniformLights);
+	glBufferData(GL_UNIFORM_BUFFER, 5 * sizeof(UniformLight), NULL, GL_STATIC_DRAW);
+
+	unsigned int lightsIndex = glGetUniformBlockIndex(m_Shader->GetShaderID(), "Lights");
+	glUniformBlockBinding(m_Shader->GetShaderID(), lightsIndex, 1);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_UniformLights);
+
+	UniformLight lights[2] = {
+		{glm::vec3(-1.0f, 3.0f, 1.0f), 1.0f, 0.3f},
+		{glm::vec3(0.0f, 1.0f, -2.0f), 0.0f, 0.6f}
+	};
+	glBufferSubData(GL_UNIFORM_BUFFER, 0,  2 * sizeof(UniformLight), &lights[0]);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	m_PointLightPos = lights[1].transform;
 }
 
 demo::GouraudDemo::~GouraudDemo()
@@ -279,6 +302,15 @@ void demo::GouraudDemo::OnUpdate(float deltaTime)
 	if (m_InputMod->QueryInput(Input::DOWN))
 		rotation.y += 1;
 
+	if (m_InputMod->QueryInput(Input::I))
+		m_PointLightPos.z -= 0.1f;
+	if (m_InputMod->QueryInput(Input::K))
+		m_PointLightPos.z += 0.1f;
+	if (m_InputMod->QueryInput(Input::J))
+		m_PointLightPos.x -= 0.1f;
+	if (m_InputMod->QueryInput(Input::L))
+		m_PointLightPos.x += 0.1f;
+
 	rotation *= 3.14f / 180;
 	m_Camera->Rotate(rotation.x, rotation.y);
 	if (change != glm::vec3(0))
@@ -306,6 +338,9 @@ void demo::GouraudDemo::OnRender()
 	glBindBuffer(GL_UNIFORM_BUFFER, m_UniformBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(viewProj));
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camPos));
+
+	glBindBuffer(GL_UNIFORM_BUFFER, m_UniformLights);
+	glBufferSubData(GL_UNIFORM_BUFFER, (sizeof(UniformLight)), sizeof(glm::vec3), glm::value_ptr(m_PointLightPos));
 
 	// Render each object
 	for (int i = 0; i < m_Scene.size(); i++) {
