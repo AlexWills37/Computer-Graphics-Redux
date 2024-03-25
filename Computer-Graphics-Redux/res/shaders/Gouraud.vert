@@ -28,8 +28,11 @@ uniform LightBlock
 */
 
 // Per-frame uniforms
-uniform vec4 u_CamPos;
-uniform mat4 u_ViewProj;
+layout(std140) uniform Matrices
+{
+	mat4 u_ViewProj;
+	vec4 u_CamPos;
+};
 
 // Per-object uniforms
 uniform mat4 u_Transform;
@@ -39,7 +42,7 @@ void main()
 {
 	// TODO: Send light information from CPU with Uniform Buffer
 	Light lights[2] = {
-		{ vec3(-1, 3, 4), true, 0.3f},
+		{ vec3(-1, 3, 1), true, 0.3f},
 		{ vec3(0, 1, -2), false, 0.6f}
 	};
 
@@ -63,6 +66,7 @@ void main()
 		if (n_dot_l > 0) {
 			totalLightIntensity += lights[i].intensity * n_dot_l / (length(normal) * length(lightVector));
 		}
+		
 		// Specular lighting
 		if (u_SpecValue >= 0) {
 			vec3 reflectVector = 2.0f * normal * n_dot_l - lightVector;

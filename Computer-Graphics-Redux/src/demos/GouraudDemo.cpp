@@ -8,6 +8,7 @@
 
 
 #include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 
 /*
  * Gouraud shading architecture:
@@ -233,11 +234,16 @@ demo::GouraudDemo::GouraudDemo()
 	m_Camera->Translate(glm::vec3(0, 0, 3.0f));
 
 
-	GLuint shader = m_Shader->GetShaderID();
-	GLuint blockID = glGetUniformBlockIndex(shader, "LightBlock");
-	GLint blockSize;
-	glGetActiveUniformBlockiv(shader, blockID, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-	;
+	// Create uniform buffer
+	glGenBuffers(1, &m_UniformBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_UniformBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int matrixIndex = glGetUniformBlockIndex(m_Shader->GetShaderID(), "Matrices");
+	glUniformBlockBinding(m_Shader->GetShaderID(), matrixIndex, 0);	// Bind the "Matrices" (in the shader) to point 0 (in the Uniform Buffer).
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_UniformBuffer); // Connect index 0 to the buffer we made
 }
 
 demo::GouraudDemo::~GouraudDemo()
@@ -294,11 +300,16 @@ void demo::GouraudDemo::OnRender()
 
 	// Camera pos and light info will stay constant
 	m_Shader->Bind();
-	m_Shader->SetUniform4f("u_CamPos", camPos.x, camPos.y, camPos.z, 1.0f);
+	//m_Shader->SetUniform4f("u_CamPos", camPos.x, camPos.y, camPos.z, 1.0f);
+
+	// Update uniform buffer object
+	glBindBuffer(GL_UNIFORM_BUFFER, m_UniformBuffer);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(viewProj));
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camPos));
 
 	// Render each object
 	for (int i = 0; i < m_Scene.size(); i++) {
-		m_Shader->SetUniformMat4f("u_ViewProj", viewProj);
+		//m_Shader->SetUniformMat4f("u_ViewProj", viewProj);
 		m_Shader->SetUniformMat4f("u_Transform", m_Scene[i].transform.GetMatrix());
 		glm::vec3 color = m_Scene[i].color;
 		m_Shader->SetUniform4f("u_Color", color.r, color.g, color.b, 1.0f);

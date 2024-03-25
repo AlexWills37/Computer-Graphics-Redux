@@ -1,6 +1,6 @@
 ﻿  GouraudDemo.cpp
-C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\demos\GouraudDemo.cpp(174,29): warning C4267: '=': 'size_t' - 'uint32_t' dönüşümü; veri kaybı olabilir
-C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\demos\GouraudDemo.cpp(214,23): warning C4312: 'tür dönüştürme': 'unsigned int' öğesinden daha büyük boyutlu 'const void *' öğesine dönüştürme
+C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\demos\GouraudDemo.cpp(175,29): warning C4267: '=': 'size_t' - 'uint32_t' dönüşümü; veri kaybı olabilir
+C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\demos\GouraudDemo.cpp(215,23): warning C4312: 'tür dönüştürme': 'unsigned int' öğesinden daha büyük boyutlu 'const void *' öğesine dönüştürme
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\memory(3434,56): warning C4244: 'bağımsız değişken': '_Ty' - 'float' dönüşümü; veri kaybı olabilir
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\memory(3434,56): warning C4244:         with
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\memory(3434,56): warning C4244:         [
@@ -9,7 +9,7 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.3351
   ('src/demos/GouraudDemo.cpp' kaynak dosyası derleniyor)
   C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\memory(3434,56):
   şablon örneği oluşturma bağlamı (önce en eski olan)
-  	C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\demos\GouraudDemo.cpp(157,18):
+  	C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\demos\GouraudDemo.cpp(158,18):
   	derlenen şablon işlevi 'std::unique_ptr<Camera,std::default_delete<Camera>> std::make_unique<Camera,int,int,int,float,float,0>(int &&,int &&,int &&,float &&,float &&)' örneği oluşturma başvurusuna bakın
   
   Computer-Graphics-Redux.vcxproj -> C:\dev\Computer-Graphics-Redux\x64\Debug\Computer-Graphics-Redux.exe

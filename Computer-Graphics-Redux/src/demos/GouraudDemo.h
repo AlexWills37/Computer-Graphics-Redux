@@ -39,7 +39,7 @@ namespace demo {
 		uint32_t m_IndexCount;
 		std::vector<SphereInstance> m_Scene;
 
-		GLuint m_VAO, m_VertexBuffer, m_IndexBuffer;
+		GLuint m_VAO, m_VertexBuffer, m_IndexBuffer, m_UniformBuffer;
 
 		std::unique_ptr<Shader> m_Shader;
 
