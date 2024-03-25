@@ -10,22 +10,23 @@
 
 namespace demo {
 
-	struct SphereInstance {
-		Transform transform;
-		float specValue;
-		glm::vec3 color;
-	};
-	enum LightType {
-		AMBIENT, POINT, DIRECTIONAL
-	};
-
-	struct Light {
-		LightType type;
-		float intensity;
-		glm::vec3 transform;
-	};
 
 	class GouraudDemo : public Demo {
+	public:
+		struct SphereInstance {
+			Transform transform;
+			float specValue;
+			glm::vec3 color;
+		};
+		enum LightType {
+			AMBIENT, POINT, DIRECTIONAL
+		};
+
+		struct Light {
+			LightType type;
+			float intensity;
+			glm::vec3 transform;
+		};
 	public:
 		GouraudDemo();
 		~GouraudDemo();

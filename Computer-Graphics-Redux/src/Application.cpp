@@ -14,6 +14,7 @@
 #include "demos/SandboxDemo.h"
 #include "demos/NormalSphereDemo.h"
 #include "demos/GouraudDemo.h"
+#include "demos/PhongDemo.h"
 
 
 int main() {
@@ -33,7 +34,7 @@ int main() {
 
 	std::cout << "Using OpenGL: " << glGetString(GL_VERSION) << std::endl;
 
-	demo::Demo* d = new demo::GouraudDemo();
+	demo::Demo* d = new demo::PhongDemo();
 
 	while (!window.WindowShouldClose())
 	{

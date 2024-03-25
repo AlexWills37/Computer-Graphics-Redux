@@ -68,23 +68,23 @@ struct LitVertex {
 
 using namespace demo;
 
-float ComputeLighting(Vertex p, std::vector<Light> lights, glm::vec3 camPos)
+float ComputeLighting(Vertex p, std::vector<GouraudDemo::Light> lights, glm::vec3 camPos)
 {
 	float specValue = 1000;
 
 	float totalLighting = 0;
 	for (int i = 0; i < lights.size(); i++) {
-		if (lights[i].type == AMBIENT) {
+		if (lights[i].type == GouraudDemo::AMBIENT) {
 			totalLighting += lights[i].intensity;
 		}
 		else {
 			glm::vec3 lightVector;
 			glm::vec3 normal = glm::vec3(p.normal[0], p.normal[1], p.normal[2]);
 			glm::vec3 pointPos = glm::vec3(p.position[0], p.position[1], p.position[2]);
-			if (lights[i].type == POINT) {
+			if (lights[i].type == GouraudDemo::POINT) {
 				lightVector = lights[i].transform - pointPos;
 			}
-			else if (lights[i].type == DIRECTIONAL) {
+			else if (lights[i].type == GouraudDemo::DIRECTIONAL) {
 				lightVector = lights[i].transform;
 			}
 			else {
@@ -114,22 +114,22 @@ float ComputeLighting(Vertex p, std::vector<Light> lights, glm::vec3 camPos)
 	return totalLighting;
 }
 
-float ComputePartialLighting(Vertex p, std::vector<Light> lights)
+float ComputePartialLighting(Vertex p, std::vector<GouraudDemo::Light> lights)
 {
 
 	float totalLighting = 0;
 	for (int i = 0; i < lights.size(); i++) {
-		if (lights[i].type == AMBIENT) {
+		if (lights[i].type == GouraudDemo::AMBIENT) {
 			totalLighting += lights[i].intensity;
 		}
 		else {
 			glm::vec3 lightVector;
 			glm::vec3 normal = glm::vec3(p.normal[0], p.normal[1], p.normal[2]);
 			glm::vec3 pointPos = glm::vec3(p.position[0], p.position[1], p.position[2]);
-			if (lights[i].type == POINT) {
+			if (lights[i].type == GouraudDemo::POINT) {
 				lightVector = lights[i].transform - pointPos;
 			}
-			else if (lights[i].type == DIRECTIONAL) {
+			else if (lights[i].type == GouraudDemo::DIRECTIONAL) {
 				lightVector = lights[i].transform;
 			}
 			else {
@@ -146,10 +146,10 @@ float ComputePartialLighting(Vertex p, std::vector<Light> lights)
 	return totalLighting;
 }
 
-float ComputeAmbientLighting(std::vector<Light> lights) {
+float ComputeAmbientLighting(std::vector<GouraudDemo::Light> lights) {
 	float l = 0;
 	for (int i = 0; i < lights.size(); i++) {
-		if (lights[i].type == AMBIENT)
+		if (lights[i].type == GouraudDemo::AMBIENT)
 			l += lights[i].intensity;
 	}
 	return l;
