@@ -19,21 +19,13 @@ struct Light
 			// 6-7
 };
 
+// Get light information from cpu
 layout (std140) uniform Lights
 {
 	Light lights[5];
 };
 
-/*
-uniform LightBlock 
-{
-	vec3 transform;
-	bool isDirectional;
-	float intensity;
-} lights[2];
-*/
-
-// Per-frame uniforms
+// Get matrices from cpu
 layout(std140) uniform Matrices
 {
 	mat4 u_ViewProj;
@@ -46,12 +38,7 @@ uniform float u_SpecValue;
 
 void main()
 {
-	// TODO: Send light information from CPU with Uniform Buffer
-	/*Light lights[2] = {
-		{ vec3(-1, 3, 1), true, 0.3f},
-		{ vec3(0, 1, -2), false, 0.6f}
-	};*/
-
+	// Get the point's position in the world, and the point on screen
 	vec4 worldPosition = u_Transform * position;
 	gl_Position = u_ViewProj * worldPosition;
 	
@@ -86,5 +73,4 @@ void main()
 	
 	// Interpolate light intensity
 	v_Light = totalLightIntensity;
-	//v_Light = lights[1].isDirectional > 0.5f?1:0;
 }

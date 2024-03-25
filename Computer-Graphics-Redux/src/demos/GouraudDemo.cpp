@@ -184,14 +184,14 @@ demo::GouraudDemo::GouraudDemo()
 
 	VertexBufferLayout layout = sphere.GetLayout();
 
-	// Add partial lighting information
+	// Add partial lighting information to vertices
 	m_Lights = {
 		{AMBIENT, 0.2f},
-		{DIRECTIONAL, 0.3f, glm::vec3(1, 3, 4)},
-		{POINT, 0.6f, glm::vec3(2, 1, 2)}
+		{DIRECTIONAL, 0.3f, glm::vec3(-1, 3, 1)},
+		{POINT, 0.6f, glm::vec3(0, 1, -2)}
 	};
 
-	glm::vec3 camPos = m_Camera->GetPosition();
+	//glm::vec3 camPos = m_Camera->GetPosition();
 
 	std::vector<LitVertex> litVertices;
 	float lightValue = ComputeAmbientLighting(m_Lights);
@@ -241,17 +241,18 @@ demo::GouraudDemo::GouraudDemo()
 	m_Camera->Translate(glm::vec3(0, 0, 3.0f));
 
 
-	// Create uniform buffer
-	glGenBuffers(1, &m_UniformBuffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, m_UniformBuffer);
+	// Create uniform buffer for matrices
+	glGenBuffers(1, &m_UniformMatrices);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_UniformMatrices);
 	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	unsigned int matrixIndex = glGetUniformBlockIndex(m_Shader->GetShaderID(), "Matrices");
 	glUniformBlockBinding(m_Shader->GetShaderID(), matrixIndex, 0);	// Bind the "Matrices" (in the shader) to point 0 (in the Uniform Buffer).
 
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_UniformBuffer); // Connect index 0 to the buffer we made
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_UniformMatrices); // Connect index 0 to the buffer we made
 
+	// Create uniform buffer for lights
 	glGenBuffers(1, &m_UniformLights);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_UniformLights);
 	glBufferData(GL_UNIFORM_BUFFER, 5 * sizeof(UniformLight), NULL, GL_STATIC_DRAW);
@@ -260,9 +261,10 @@ demo::GouraudDemo::GouraudDemo()
 	glUniformBlockBinding(m_Shader->GetShaderID(), lightsIndex, 1);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_UniformLights);
 
+	// Add light info
 	UniformLight lights[2] = {
-		{glm::vec3(-1.0f, 3.0f, 1.0f), 1.0f, 0.3f},
-		{glm::vec3(0.0f, 1.0f, -2.0f), 0.0f, 0.6f}
+		{m_Lights[1].transform, m_Lights[1].type == DIRECTIONAL ? 1.0f : 0.0f, m_Lights[1].intensity},
+		{m_Lights[2].transform, m_Lights[2].type == DIRECTIONAL ? 1.0f : 0.0f, m_Lights[2].intensity}
 	};
 	glBufferSubData(GL_UNIFORM_BUFFER, 0,  2 * sizeof(UniformLight), &lights[0]);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -273,6 +275,8 @@ demo::GouraudDemo::~GouraudDemo()
 {
 	glDeleteBuffers(1, &m_IndexBuffer);
 	glDeleteBuffers(1, &m_VertexBuffer);
+	glDeleteBuffers(1, &m_UniformMatrices);
+	glDeleteBuffers(1, &m_UniformLights);
 	glDeleteVertexArrays(1, &m_VAO);
 }
 
@@ -280,7 +284,7 @@ void demo::GouraudDemo::OnUpdate(float deltaTime)
 {
 	glm::vec3 change = glm::vec3(0);
 	glm::vec2 rotation = glm::vec2(0);
-
+	// Update camera position
 	if (m_InputMod->QueryInput(Input::S))
 		change.z += 1;
 	if (m_InputMod->QueryInput(Input::W))
@@ -302,6 +306,7 @@ void demo::GouraudDemo::OnUpdate(float deltaTime)
 	if (m_InputMod->QueryInput(Input::DOWN))
 		rotation.y += 1;
 
+	// Update light position
 	if (m_InputMod->QueryInput(Input::I))
 		m_PointLightPos.z -= 0.1f;
 	if (m_InputMod->QueryInput(Input::K))
@@ -332,10 +337,9 @@ void demo::GouraudDemo::OnRender()
 
 	// Camera pos and light info will stay constant
 	m_Shader->Bind();
-	//m_Shader->SetUniform4f("u_CamPos", camPos.x, camPos.y, camPos.z, 1.0f);
 
-	// Update uniform buffer object
-	glBindBuffer(GL_UNIFORM_BUFFER, m_UniformBuffer);
+	// Update uniform buffer objects
+	glBindBuffer(GL_UNIFORM_BUFFER, m_UniformMatrices);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(viewProj));
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camPos));
 
@@ -344,7 +348,6 @@ void demo::GouraudDemo::OnRender()
 
 	// Render each object
 	for (int i = 0; i < m_Scene.size(); i++) {
-		//m_Shader->SetUniformMat4f("u_ViewProj", viewProj);
 		m_Shader->SetUniformMat4f("u_Transform", m_Scene[i].transform.GetMatrix());
 		glm::vec3 color = m_Scene[i].color;
 		m_Shader->SetUniform4f("u_Color", color.r, color.g, color.b, 1.0f);
