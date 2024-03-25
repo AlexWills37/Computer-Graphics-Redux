@@ -3,27 +3,7 @@
 #include "Display.h"
 #include "Model.h"
 
-
-
-
 #include <iostream>
-
-/*
- * Phong Shading Outline:
- *		Per pixel lighting calculations!
- * Vertex Shader:
- *		matrices -> screen position
- *		transfer world position to frag shader
- *	Fragment Shader:
- *		- Interpolated world position
- *		- Camear position (uniform)
- *		- Light information (uniform)
- * 
- * VAO - Unit Sphere Instance
- *		Uniforms:
- *			- Model Transform matrix
- *			- Color
- */
 
 /*
  * Phong shading uses the same light computations, but now calculates the light intensity
@@ -93,6 +73,7 @@ demo::PhongDemo::PhongDemo()
 	m_Lights[0] = { glm::vec3(0, 0, 0), AMBIENT, 0.2f };
 	m_Lights[1] = { glm::vec3(-1, 3, 1), DIRECTIONAL, 0.3f };
 	m_Lights[2] = { glm::vec3(0, 1, -2), POINT, 0.6f };
+	m_Lights[3] = { glm::vec3(-1, -2, 3), POINT, 0.4f };
 
 	// Create Shader
 	m_Shader = std::make_unique<Shader>("res/shaders/Phong");
@@ -122,35 +103,54 @@ demo::PhongDemo::~PhongDemo()
 
 void demo::PhongDemo::OnUpdate(float deltaTime)
 {
-	glm::vec3 change = glm::vec3(0);
-	glm::vec2 rotation = glm::vec2(0);
+	// Move camera
+	glm::vec3 deltaPos = glm::vec3(0);
+	glm::vec2 deltaRot = glm::vec2(0);
+	float speedModifier = 1;
 	
 	if (m_InputMod->QueryInput(Input::S))
-		change.z += 1;
+		deltaPos.z += 1;
 	if (m_InputMod->QueryInput(Input::W))
-		change.z -= 1;
+		deltaPos.z -= 1;
 	if (m_InputMod->QueryInput(Input::A))
-		change.x -= 1;
+		deltaPos.x -= 1;
 	if (m_InputMod->QueryInput(Input::D))
-		change.x += 1;
+		deltaPos.x += 1;
 	if (m_InputMod->QueryInput(Input::Q))
-		change.y -= 1;
+		deltaPos.y -= 1;
 	if (m_InputMod->QueryInput(Input::E))
-		change.y += 1;
+		deltaPos.y += 1;
 	if (m_InputMod->QueryInput(Input::LEFT))
-		rotation.x -= 1;
+		deltaRot.x -= 1;
 	if (m_InputMod->QueryInput(Input::RIGHT))
-		rotation.x += 1;
+		deltaRot.x += 1;
 	if (m_InputMod->QueryInput(Input::UP))
-		rotation.y -= 1;
+		deltaRot.y -= 1;
 	if (m_InputMod->QueryInput(Input::DOWN))
-		rotation.y += 1;
-	
-	rotation *= 3.14f / 180;
-	m_Camera->Rotate(rotation.x, rotation.y);
-	if (change != glm::vec3(0))
-		change = glm::normalize(change);
-	m_Camera->Move(change * 0.05f);
+		deltaRot.y += 1;
+	if (m_InputMod->QueryInput(Input::SHIFT))
+		speedModifier = 2;
+	if (m_InputMod->QueryInput(Input::CONTROL))
+		speedModifier = 0.5f;
+
+	deltaRot *= 3.14f / 180;
+	m_Camera->Rotate(deltaRot.x, deltaRot.y);
+	if (deltaPos != glm::vec3(0))
+		deltaPos = glm::normalize(deltaPos) * speedModifier;
+	m_Camera->Move(deltaPos * 0.05f);
+
+	// Move point light
+	glm::vec3 deltaLightPos = glm::vec3(0, 0, 0);
+	if (m_InputMod->QueryInput(Input::I))
+		deltaLightPos.z -= 1;
+	if (m_InputMod->QueryInput(Input::J))
+		deltaLightPos.x -= 1;
+	if (m_InputMod->QueryInput(Input::K))
+		deltaLightPos.z += 1;
+	if (m_InputMod->QueryInput(Input::L))
+		deltaLightPos.x += 1;
+	deltaLightPos *= 0.1f;
+	m_Lights[2].position += deltaLightPos;
 	
 }
 
