@@ -1,6 +1,6 @@
 ﻿  TextureDemo.cpp
-C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\demos\TextureDemo.cpp(51,29): warning C4267: '=': 'size_t' - 'uint32_t' dönüşümü; veri kaybı olabilir
-C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\demos\TextureDemo.cpp(105,23): warning C4312: 'tür dönüştürme': 'unsigned int' öğesinden daha büyük boyutlu 'const void *' öğesine dönüştürme
+C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\demos\TextureDemo.cpp(52,29): warning C4267: '=': 'size_t' - 'uint32_t' dönüşümü; veri kaybı olabilir
+C:\dev\Computer-Graphics-Redux\Computer-Graphics-Redux\src\demos\TextureDemo.cpp(106,23): warning C4312: 'tür dönüştürme': 'unsigned int' öğesinden daha büyük boyutlu 'const void *' öğesine dönüştürme
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\memory(3434,56): warning C4244: 'bağımsız değişken': '_Ty' - 'float' dönüşümü; veri kaybı olabilir
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\memory(3434,56): warning C4244:         with
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\memory(3434,56): warning C4244:         [

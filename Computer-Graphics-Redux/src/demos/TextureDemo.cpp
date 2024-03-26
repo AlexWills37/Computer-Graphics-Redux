@@ -47,6 +47,7 @@ demo::TextureDemo::TextureDemo()
 
 	// Create cube data
 	Model cube = Model::CreateCube();
+	//Model cube = Model::CreateSphere(10);
 	std::vector<uint32_t> indices = cube.GetIndices();
 	m_IndexCount = indices.size();
 	std::vector<Vertex> vertices = cube.GetVertices();

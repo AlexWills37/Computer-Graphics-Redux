@@ -74,8 +74,14 @@ void main()
 	for (int i = 0; i < 5; i++) {
 		totalLighting += ComputeLighting(u_Lights[i]);
 	}
+	// Get the texture color
 	vec4 texColor = texture(u_Texture, v_TexCoords);
-	if (v_Normal.y == 1)
-		texColor *= vec4(0.2f, 0.7f, 0.2f, 1);
+
+	// Brighten / add green to the top face (normal pointing straight up)
+	if (v_Normal.y == 1){
+		texColor = sqrt(texColor) * vec4(0.6f, 1.0f, 0.6f, 1);
+	}
+
+	// Add lighting
 	color = texColor * totalLighting;
 }
