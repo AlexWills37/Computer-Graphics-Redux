@@ -58,6 +58,8 @@ Phong shading interpolates the vertices' positions and normals so that each pixe
 
 OpenGL does most of the heavy lifting with textures (generating mipmaps, bilinear filtering, interpolating (varying) variables with the z axis in mind), but that didn't make it any less satisfying to get textures working!
 
+<img width="472" alt="Grass blocks" src="https://github.com/AlexWills37/Computer-Graphics-Redux/assets/77563588/2051ff24-86b4-4e1e-a212-c0001dbaec3e">
+
 > The top and bottom faces use a dirt texture, while the side faces use the side of the grass texture. Both textures are in a single .png, like a texture atlas but only 2 textures!
 > 
 > > If the top face is a dirt texture, how is it green?
