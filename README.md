@@ -53,3 +53,27 @@ Phong shading interpolates the vertices' positions and normals so that each pixe
 
 > In this render, the point light is in about the same place as it was in the Gouraud shading, but now the entire face feels more properly lit.
 
+
+### Textures
+
+OpenGL does most of the heavy lifting with textures (generating mipmaps, bilinear filtering, interpolating (varying) variables with the z axis in mind), but that didn't make it any less satisfying to get textures working!
+
+> The top and bottom faces use a dirt texture, while the side faces use the side of the grass texture. Both textures are in a single .png, like a texture atlas but only 2 textures!
+> 
+> > If the top face is a dirt texture, how is it green?
+> >
+> > This is definitely not optimal, but, working with what I had, I added some green to any pixels with a normal facing straight up. Just don't tilt the cubes!
+> >
+> > ``` 
+> > if (v_Normal.y == 1) {
+> >		texColor = sqrt(texColor) * vec4(0.6f, 1.0f, 0.6f, 1);
+> >	}
+> > ```
+
+
+
+## OpenGL skills
+
+### Uniform Buffer Objects
+
+### Textures
