@@ -25,8 +25,8 @@ demo::PhongDemo::PhongDemo()
 	m_Camera->Translate(glm::vec3(-1, 2.0f, 8.0f));
 
 	// Create Sphere data
-	Model sphere = Model::CreateSphere(10);
-	//Model sphere = Model::CreateCube();
+	//Model sphere = Model::CreateSphere(10);
+	Model sphere = Model::CreateCube();
 	std::vector<uint32_t> indices = sphere.GetIndices();
 	m_IndexCount = indices.size();
 	std::vector<Vertex> vertices = sphere.GetVertices();
