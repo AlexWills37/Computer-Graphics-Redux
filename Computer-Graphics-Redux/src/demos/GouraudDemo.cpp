@@ -176,8 +176,8 @@ demo::GouraudDemo::GouraudDemo()
 	m_Scene.push_back({ c, 1000, glm::vec3(0.9, 0.8, 0.2) });
 
 	// Create Sphere data
-	Model sphere = Model::CreateSphere(200);
-	//Model sphere = Model::CreateCube();
+	//Model sphere = Model::CreateSphere(200);
+	Model sphere = Model::CreateCube();
 	std::vector<uint32_t> indices = sphere.GetIndices();
 	m_IndexCount = indices.size();
 	std::vector<Vertex> vertices = sphere.GetVertices();
@@ -188,7 +188,7 @@ demo::GouraudDemo::GouraudDemo()
 	m_Lights = {
 		{AMBIENT, 0.2f},
 		{DIRECTIONAL, 0.3f, glm::vec3(-1, 3, 1)},
-		{POINT, 0.6f, glm::vec3(0, 1, -2)}
+		{POINT, 0.6f, glm::vec3(5, 3, -2)}
 	};
 
 	//glm::vec3 camPos = m_Camera->GetPosition();

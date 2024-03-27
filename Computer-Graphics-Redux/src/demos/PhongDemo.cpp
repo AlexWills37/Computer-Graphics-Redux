@@ -26,6 +26,7 @@ demo::PhongDemo::PhongDemo()
 
 	// Create Sphere data
 	Model sphere = Model::CreateSphere(10);
+	//Model sphere = Model::CreateCube();
 	std::vector<uint32_t> indices = sphere.GetIndices();
 	m_IndexCount = indices.size();
 	std::vector<Vertex> vertices = sphere.GetVertices();
@@ -72,8 +73,8 @@ demo::PhongDemo::PhongDemo()
 	// Add lighting information
 	m_Lights[0] = { glm::vec3(0, 0, 0), AMBIENT, 0.2f };
 	m_Lights[1] = { glm::vec3(-1, 3, 1), DIRECTIONAL, 0.3f };
-	m_Lights[2] = { glm::vec3(0, 1, -2), POINT, 0.6f };
-	m_Lights[3] = { glm::vec3(-1, -2, 3), POINT, 0.4f };
+	m_Lights[2] = { glm::vec3(5, 3, -2), POINT, 0.6f };
+	//m_Lights[3] = { glm::vec3(-1, -2, 3), POINT, 0.4f };
 
 	// Create Shader
 	m_Shader = std::make_unique<Shader>("res/shaders/Phong");
